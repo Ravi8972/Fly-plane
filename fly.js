@@ -1,35 +1,48 @@
-const readline = require('readline');
 
-const rl = readline.createInterface({
-  input: process.stdin,
-  output: process.stdout
-});
-
-rl.question('Enter the number of airports: ', (n) => {
-  let fuel = [];
-  console.log('Enter the units of fuel available at each airport:');
-  
-  rl.on('line', (line) => {
-    fuel = line.split(' ').map(Number);
-    let result = minimumPlanes(fuel);
-    console.log(`Minimum number of planes required: ${result}`);
-    rl.close();
-  });
-});
-
-function minimumPlanes(fuel) {
-  let n = fuel.length;
-  let dp = new Array(n).fill(Infinity);
-  
-  dp[0] = 1; // Start from the first airport
-  
-  for (let i = 1; i < n; i++) {
-    for (let j = 0; j < i; j++) {
-      if (j + fuel[j] >= i) {
-        dp[i] = Math.min(dp[i], dp[j] + 1);
-      }
+function minPlanesToDestination(fuelArray) {
+    const n = fuelArray.length;
+    if (n === 1) {
+        return 0; // No planes needed if there's only one airport
     }
-  }
-  
-  return dp[n - 1] === Infinity ? -1 : dp[n - 1];
+
+    let jumps = 0;
+    let currentEnd = 0;
+    let farthest = 0;
+
+    for (let i = 0; i < n; i++) {
+        // Farthest we can reach from this airport
+        farthest = Math.max(farthest, i + fuelArray[i]);
+
+        // If we have reached the end of the current plane's range
+        if (i === currentEnd) {
+            jumps++;
+            currentEnd = farthest;
+
+            // If currentEnd is beyond or at the last airport
+            if (currentEnd >= n - 1) {
+                return jumps;
+            }
+        }
+
+        // If we are stuck at a position where we can't move forward
+        if (i === farthest) {
+            return -1;
+        }
+    }
+
+    return -1; // Exit the loop without finding a solution
 }
+
+function main() {
+    const prompt = require('prompt-sync')();
+    const arraySize = parseInt(prompt("Enter the number of airports: "));
+    const arr = [];
+    
+    for (let i = 0; i < arraySize; i++) {
+        arr.push(parseInt(prompt(Enter fuel capacity for airport ${i + 1}: )));
+    }
+   
+    console.log("Minimum planes needed: " + minPlanesToDestination(arr));
+}
+
+main();
